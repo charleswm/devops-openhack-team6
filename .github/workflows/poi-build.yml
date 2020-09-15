@@ -2,11 +2,13 @@ name: POI Build
 
 on:
   push:
-    branches: [ master ]
+    branches: 
+      - master
     paths:
       - 'apis/poi/**'
   pull_request:
-    branches: [ master ]
+    branches: 
+      - master
     paths:
       - 'apis/poi/**'
 
