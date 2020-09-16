@@ -50,6 +50,6 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: ./apis/poi/web/
-        file: ./Dockerfile
+        file: ./apis/poi/web/Dockerfile
         push: true
         tags: devopsoh/api-poi:${{github.run_number}}	
