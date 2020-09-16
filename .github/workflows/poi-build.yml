@@ -47,6 +47,6 @@ jobs:
         username: ${{ secrets.ACR_USER }}
         password: ${{ secrets.ACR_PASSWORD }}
     - name: Docker Build POI
-      run: docker build ./apis/poi/web
+      run: docker build ./apis/poi/web -t devopsoh/api-poi:$GITHUB_SHA
     - name: Docker Push
-      run: docker push devopsoh/poi:$GITHUB_SHA
+      run: docker push devopsoh/api-poi:$GITHUB_SHA
