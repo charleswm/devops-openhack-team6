@@ -52,4 +52,4 @@ jobs:
         context: ./api/poi/web
         file: ./Dockerfile
         push: true
-        tags: devopsoh/api-poi:${{GITHUB_SHA}}
+        tags: devopsoh/api-poi:$GITHUB_RUN_NUMBER
