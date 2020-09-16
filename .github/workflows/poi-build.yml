@@ -30,6 +30,15 @@ jobs:
       uses: JasonEtco/create-an-issue@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  docker-build-push:  
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Login to ACR
+      uses: docker/login-action@v1
+      with:
+        registry: openhackuc9203t8acr.azurecr.io
+        username: ${{ secrets.ACR_USER }}
+        password: ${{ secrets.ACR_PASSWORD }}
     - name: Docker Build POI
-      if: ${{ github.ref == 'master' }}
       run: docker build ./apis/poi/web
