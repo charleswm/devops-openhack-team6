@@ -49,7 +49,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
-        context: ./api/poi/web
+        context: ./apis/poi/web
         file: ./Dockerfile
         push: true
         tags: devopsoh/api-poi:2209
