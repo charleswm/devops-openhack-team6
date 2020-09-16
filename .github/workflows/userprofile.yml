@@ -15,6 +15,7 @@ on:
       - 'apis/userprofile/**'
 env:
   AZURE_WEBAPP_NAME: openhackuc9203t8userprofile
+  AZURE_WEBAPP_SLOT: openhackuc9203t8trips-staging
 
 jobs:
   build:
@@ -63,4 +64,5 @@ jobs:
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_USERPROFILE  }} # Define secret variable in repository settings as per action documentation
+        slot-name: AZURE_WEBAPP_SLOT
         images: openhackuc9203t8acr.azurecr.io/devopsoh/api-userprofile:${{github.run_number}}
