@@ -11,7 +11,9 @@ on:
       - master
     paths:
       - 'apis/poi/**'
-
+env:
+  AZURE_WEBAPP_NAME: openhackuc9203t8poi
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,6 +35,7 @@ jobs:
   docker-build-push:  
     runs-on: ubuntu-latest
     needs: build
+    if: github.event_name != 'pull_request'
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -50,11 +53,11 @@ jobs:
       run: docker build ./apis/poi/web/ -t openhackuc9203t8acr.azurecr.io/devopsoh/api-poi:${{github.run_number}}
     - name: Docker push
       run: docker push openhackuc9203t8acr.azurecr.io/devopsoh/api-poi:${{github.run_number}}
-     
-#     - name: Build and push
-#       uses: docker/build-push-action@v2
-#       with:
-#         context: ./apis/poi/web/
-#         file: ./apis/poi/web/Dockerfile
-#         push: true
-#         tags: devopsoh/api-poi:${{github.run_number}}	
+            
+    - name: 'Deploy to Azure Web App for Container'
+    - uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
+        images: openhackuc9203t8acr.azurecr.io/devopsoh/api-poi:${{github.run_number}}
+            
