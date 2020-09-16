@@ -46,10 +46,15 @@ jobs:
         registry: openhackuc9203t8acr.azurecr.io
         username: ${{ secrets.ACR_USER }}
         password: ${{ secrets.ACR_PASSWORD }}
-    - name: Build and push
-      uses: docker/build-push-action@v2
-      with:
-        context: ./apis/poi/web/
-        file: ./apis/poi/web/Dockerfile
-        push: true
-        tags: devopsoh/api-poi:${{github.run_number}}	
+    - name: Docker build
+      run: docker build ./apis/poi/web/ -t openhackuc9203t8acr.azurecr.io/devopsoh/api-poi:${{github.run_number}}
+    - name: Docker push
+      run: docker push openhackuc9203t8acr.azurecr.io/devopsoh/api-poi:${{github.run_number}}
+     
+#     - name: Build and push
+#       uses: docker/build-push-action@v2
+#       with:
+#         context: ./apis/poi/web/
+#         file: ./apis/poi/web/Dockerfile
+#         push: true
+#         tags: devopsoh/api-poi:${{github.run_number}}	
