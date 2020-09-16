@@ -1,7 +1,6 @@
 ---
 title: Build Failed
-assignees: {{ payload.sender.login }}
+assignee: vszalma
 labels: bug
 ---
 Your build failed. Build pushed by {{ payload.sender.login }}.
-{{tools.context.pullRequest}}
