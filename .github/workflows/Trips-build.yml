@@ -17,6 +17,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apis/trips
 
     steps:
     - uses: actions/checkout@v2
@@ -34,10 +37,8 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-      working-directory: ./apis/trips
 
     - name: Build
       run: go build -v .
-      working-directory: ./apis/trips
       env:
         GOPATH: /home/runner/work/devops-openhack-team6/go
