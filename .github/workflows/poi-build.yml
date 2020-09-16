@@ -48,8 +48,5 @@ jobs:
         password: ${{ secrets.ACR_PASSWORD }}
     - name: Docker Build POI
       run: docker build ./apis/poi/web
-    - name: Build and push
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: ./apis/poi/web/DockerFile
+    - name: Docker Push
+      run: docker push devopsoh/poi:$GITHUB_SHA
