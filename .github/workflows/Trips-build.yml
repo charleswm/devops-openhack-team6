@@ -19,14 +19,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup Go
       uses: actions/setup-go
-    - name: Install dependencies
-      run: dotnet restore ./apis/trips/
+
+    - name: Get dependencies
+      run: |
+        go get -v -t -d ./...
+        if [ -f Gopkg.toml ]; then
+            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+            dep ensure
+        fi
+
     - name: Build
-      run: dotnet build ./apis/poi/ --configuration Release --no-restore
-    - name: Issue
-      if: ${{ failure() }}
-      uses: JasonEtco/create-an-issue@v2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: go build -v .
