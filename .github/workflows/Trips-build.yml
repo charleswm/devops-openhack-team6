@@ -20,6 +20,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+        path: go/src/github.com/charleswm/devops-openhack-team6
 
     - name: Setup Go
       uses: actions/setup-go@v2
@@ -34,3 +37,5 @@ jobs:
 
     - name: Build
       run: go build apis/trips -v .
+      env:
+        GOPATH: /home/runner/work/devops-openhack-team6/go
