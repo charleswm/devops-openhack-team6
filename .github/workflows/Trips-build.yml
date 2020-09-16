@@ -12,7 +12,8 @@ on:
       - master
     paths:
       - 'apis/trips/**'
-
+env:
+  AZURE_WEBAPP_NAME: openhackuc9203t8trips
 jobs:
   build:
 
@@ -41,6 +42,7 @@ jobs:
   docker-build-push:  
     runs-on: ubuntu-latest
     needs: build
+    if: github.event_name != 'pull_request'
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -58,3 +60,9 @@ jobs:
       run: docker build ./apis/trips/ -t openhackuc9203t8acr.azurecr.io/devopsoh/api-trips:${{github.run_number}}
     - name: Docker push
       run: docker push openhackuc9203t8acr.azurecr.io/devopsoh/api-trips:${{github.run_number}}
+    - name: 'Deploy to Azure Web App for Container'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TRIPS  }} # Define secret variable in repository settings as per action documentation
+        images: openhackuc9203t8acr.azurecr.io/devopsoh/api-trips:${{github.run_number}}
