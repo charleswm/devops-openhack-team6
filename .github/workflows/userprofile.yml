@@ -15,7 +15,7 @@ on:
       - 'apis/userprofile/**'
 env:
   AZURE_WEBAPP_NAME: openhackuc9203t8userprofile
-  AZURE_WEBAPP_SLOT: openhackuc9203t8trips-staging
+  AZURE_WEBAPP_SLOT: openhackuc9203t8userprofile-staging
 
 jobs:
   build:
