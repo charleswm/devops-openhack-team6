@@ -1,0 +1,32 @@
+name: Trips Build
+
+on:
+  push:
+    branches: 
+      - master
+    paths:
+      - 'apis/trips/**'
+  pull_request:
+    branches: 
+      - master
+    paths:
+      - 'apis/trips/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Go
+      uses: actions/setup-go
+    - name: Install dependencies
+      run: dotnet restore ./apis/trips/
+    - name: Build
+      run: dotnet build ./apis/poi/ --configuration Release --no-restore
+    - name: Issue
+      if: ${{ failure() }}
+      uses: JasonEtco/create-an-issue@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
