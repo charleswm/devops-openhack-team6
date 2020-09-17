@@ -1,0 +1,21 @@
+name: healthcheck
+defaults:
+  run:
+    shell: bash
+        
+on:
+  workflow_dispatch:
+env:
+  AZURE_WEBAPP_NAME: openhackuc9203t8userprofile
+  AZURE_WEBAPP_SLOT: staging
+  AZURE_WEBAPP_URL: https://openhackuc9203t8userprofile.azurewebsites.net/
+  AZURE_WEBAPP_STAGING_URL: https://openhackuc9203t8userprofile-staging.azurewebsites.net/
+  HEALTH_CHECK_URL: https://openhackuc9203t8userprofile-staging.azurewebsites.net/api/healthcheck/userprofile
+
+jobs:
+  run-staging-healthcheck:
+    runs-on: ubuntu-latest
+    needs: docker-build-push
+    steps:
+    - name: poll-app-health
+      run: ./scripts/healthcheck.sh -i ${{ env.HEALTH_CHECK_URL }}
