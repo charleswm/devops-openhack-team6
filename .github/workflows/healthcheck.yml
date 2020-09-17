@@ -20,5 +20,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: poll-app-health
-      run: ./healthcheck.sh -i ${{ env.HEALTH_CHECK_URL }}
       working-directory: ./scripts
+      run: |
+        chmod +x ./healthcheck.sh
+        ./healthcheck.sh -i ${{ env.HEALTH_CHECK_URL }}
+
