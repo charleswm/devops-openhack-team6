@@ -2,10 +2,7 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
 name: userprofile build
-defaults:
-  run:
-    shell: bash
-        
+
 on:
   workflow_dispatch:
   push:
@@ -22,7 +19,6 @@ env:
   AZURE_WEBAPP_SLOT: staging
   AZURE_WEBAPP_URL: https://openhackuc9203t8userprofile.azurewebsites.net/
   AZURE_WEBAPP_STAGING_URL: https://openhackuc9203t8userprofile-staging.azurewebsites.net/
-  HEALTH_CHECK_URL: https://openhackuc9203t8userprofile-staging.azurewebsites.net/api/healthcheck/userprofile
 
 jobs:
 #   build:
@@ -45,7 +41,7 @@ jobs:
 #       working-directory: ./apis/userprofile
 # #    - run: npm test
 
-  docker-build-push:  
+  build-and-deploy-staging:  
     runs-on: ubuntu-latest
 #     needs: build
     if: github.event_name != 'pull_request'
@@ -75,18 +71,57 @@ jobs:
         slot-name: ${{ env.AZURE_WEBAPP_SLOT }}
         images: openhackuc9203t8acr.azurecr.io/devopsoh/api-userprofile:${{github.run_number}}
   
-  # run-staging-healthcheck:
-  #   runs-on: ubuntu-latest
-  #   needs: docker-build-push
-  #   steps:
-  #   - name: poll-app-health
-  #     run: ./healthcheck.sh -i ${{ env.HEALTH_CHECK_URL }}
-  swap:
+  validate-and-swap-prod:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    needs: docker-build-push
-    steps: 
-      - uses: azure/login@v1.1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: swaparoo
-        run: az webapp deployment slot swap  -g ${{ env.AZURE_RG }} -n ${{ env.AZURE_WEBAPP_NAME }} --slot staging --target-slot production
+    needs: build-and-deploy-staging
+    steps:
+    - name: curl
+      id: poi-health-check
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{env.AZURE_WEBAPP_STAGING_URL}}api/healthcheck/user
+        method: GET
+    - name: Login via Az module
+      uses: azure/login@v1.1
+      with: 
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+    - name: Check Output Swap Slots
+      shell: pwsh
+      run: |
+        $output = '${{ steps.poi-health-check.outputs.output }}' | ConvertFrom-Json
+        Write-Host " Status code is $($output.statusCode) "
+        if($($output.statusCode) -eq 200) {
+        Write-host "Healthy"
+        az webapp deployment slot swap --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RG }} --slot staging --target-slot production
+        }
+        else {
+        Write-Error "POI API is not healthy"
+        }staging --target-slot pr
+  revert-prod:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: validate-and-swap-prod
+    steps:
+    - name: curl
+      id: poi-health-check
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{env.AZURE_WEBAPP_URL}}api/healthcheck/user
+        method: GET
+    - name: Login via Az module
+      uses: azure/login@v1.1
+      with: 
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+    - name: Check Output Swap Slots
+      shell: pwsh
+      run: |
+        $output = '${{ steps.poi-health-check.outputs.output }}' | ConvertFrom-Json
+        Write-Host " Status code is $($output.statusCode) "
+        if($($output.statusCode) -eq 200) {
+        Write-host "Healthy"
+        }
+        else {
+        Write-Error "POI API is not healthy"
+        az webapp deployment slot swap --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RG }} --slot staging --target-slot production
+        }staging --target-slot pr
