@@ -13,8 +13,11 @@ on:
     paths:
       - 'apis/trips/**'
 env:
+  AZURE_RG: openhackuc9203t8rg
   AZURE_WEBAPP_NAME: openhackuc9203t8trips
   AZURE_WEBAPP_SLOT: staging
+  AZURE_WEBAPP_URL: https://openhackuc9203t8tripsrewebsites.net/
+  AZURE_WEBAPP_STAGING_URL: https://openhackuc9203t8tripsging.azurewebsites.net/
 
 jobs:
   # build:
@@ -41,7 +44,8 @@ jobs:
   #   - name: Build
   #     run: go build -v .
 
-  docker-build-push:  
+# docker-build-push:  
+  build-and-deploy-staging: 
     runs-on: ubuntu-latest
     # needs: build
     if: github.event_name != 'pull_request'
@@ -69,3 +73,60 @@ jobs:
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TRIPS_STAGING  }} # Define secret variable in repository settings as per action documentation
         slot-name: ${{ env.AZURE_WEBAPP_SLOT }}
         images: openhackuc9203t8acr.azurecr.io/devopsoh/api-trips:${{github.run_number}}
+
+#New Addition
+
+  validate-and-swap-prod:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: build-and-deploy-staging
+    steps:
+    - name: curl
+      id: poi-health-check
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{env.AZURE_WEBAPP_STAGING_URL}}api/healthcheck/user
+        method: GET
+    - name: Login via Az module
+      uses: azure/login@v1.1
+      with: 
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+    - name: Check Output Swap Slots
+      shell: pwsh
+      run: |
+        $output = '${{ steps.poi-health-check.outputs.output }}' | ConvertFrom-Json
+        Write-Host " Status code is $($output.statusCode) "
+        if($($output.statusCode) -eq 200) {
+        Write-host "Healthy"
+        az webapp deployment slot swap --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RG }} --slot staging --target-slot production
+        }
+        else {
+        Write-Error "POI API is not healthy"
+        }
+  revert-prod:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: validate-and-swap-prod
+    steps:
+    - name: curl
+      id: poi-health-check
+      uses: satak/webrequest-action@master
+      with:
+        url: ${{env.AZURE_WEBAPP_URL}}api/healthcheck/user
+        method: GET
+    - name: Login via Az module
+      uses: azure/login@v1.1
+      with: 
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+    - name: Check Output Swap Slots
+      shell: pwsh
+      run: |
+        $output = '${{ steps.poi-health-check.outputs.output }}' | ConvertFrom-Json
+        Write-Host " Status code is $($output.statusCode) "
+        if($($output.statusCode) -eq 200) {
+        Write-host "Healthy"
+        }
+        else {
+        Write-Host "TRIPS API is not Healthy"
+        az webapp deployment slot swap --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RG }} --slot staging --target-slot production
+        }
