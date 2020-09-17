@@ -5,8 +5,7 @@ name: userprofile build
 defaults:
   run:
     shell: bash
-    working-directory: scripts
-    
+        
 on:
   workflow_dispatch:
   push:
