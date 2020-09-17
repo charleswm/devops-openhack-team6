@@ -74,9 +74,17 @@ jobs:
         slot-name: ${{ env.AZURE_WEBAPP_SLOT }}
         images: openhackuc9203t8acr.azurecr.io/devopsoh/api-userprofile:${{github.run_number}}
   
-  run-staging-healthcheck:
+  # run-staging-healthcheck:
+  #   runs-on: ubuntu-latest
+  #   needs: docker-build-push
+  #   steps:
+  #   - name: poll-app-health
+  #     run: ./healthcheck.sh -i ${{ env.HEALTH_CHECK_URL }}
+  swap:
     runs-on: ubuntu-latest
-    needs: docker-build-push
-    steps:
-    - name: poll-app-health
-      run: ./healthcheck.sh -i ${{ env.HEALTH_CHECK_URL }}
+    steps: 
+      - uses: azure/login@v1.1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: swaparoo
+        run: az webapp deployment slot swap  -g ${{ env.AZURE_RG }} -n ${{ env.AZURE_WEBAPP_NAME }} --slot staging --target-slot production
