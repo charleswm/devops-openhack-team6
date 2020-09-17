@@ -18,29 +18,29 @@ env:
   AZURE_WEBAPP_SLOT: staging
 
 jobs:
-  build:
+#   build:
 
-    runs-on: ubuntu-latest
+#     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [14.x]
+#     strategy:
+#       matrix:
+#         node-version: [14.x]
 
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-      working-directory: ./apis/userprofile
-    - run: npm run build --if-present
-      working-directory: ./apis/userprofile
-#    - run: npm test
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: Use Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v1
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#     - run: npm ci
+#       working-directory: ./apis/userprofile
+#     - run: npm run build --if-present
+#       working-directory: ./apis/userprofile
+# #    - run: npm test
 
   docker-build-push:  
     runs-on: ubuntu-latest
-    needs: build
+#     needs: build
     if: github.event_name != 'pull_request'
     steps:
     - name: Checkout
@@ -59,10 +59,11 @@ jobs:
       run: docker build ./apis/userprofile/ -t openhackuc9203t8acr.azurecr.io/devopsoh/api-userprofile:${{github.run_number}}
     - name: Docker push
       run: docker push openhackuc9203t8acr.azurecr.io/devopsoh/api-userprofile:${{github.run_number}}
+
     - name: 'Deploy to Azure Web App for Container'
       uses: azure/webapps-deploy@v2
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_USERPROFILE_STAGING  }} # Define secret variable in repository settings as per action documentation
-        slot-name: $AZURE_WEBAPP_SLOT
+        slot-name: ${{ AZURE_WEBAPP_SLOT }}
         images: openhackuc9203t8acr.azurecr.io/devopsoh/api-userprofile:${{github.run_number}}
