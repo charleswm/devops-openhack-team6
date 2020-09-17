@@ -13,25 +13,26 @@ on:
       - 'apis/poi/**'
 env:
   AZURE_WEBAPP_NAME: openhackuc9203t8poi
+  AZURE_WEBAPP_SLOT: staging
   
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-    - name: Install dependencies
-      run: dotnet restore ./apis/poi/
-    - name: Build
-      run: dotnet build ./apis/poi/ --configuration Release --no-restore
-    - name: Test
-      run: dotnet test ./apis/poi/ --no-restore --verbosity normal
-    - name: Issue
-      if: ${{ failure() }}
-      uses: JasonEtco/create-an-issue@v2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Setup .NET Core
+  #     uses: actions/setup-dotnet@v1
+  #   - name: Install dependencies
+  #     run: dotnet restore ./apis/poi/
+  #   - name: Build
+  #     run: dotnet build ./apis/poi/ --configuration Release --no-restore
+  #   - name: Test
+  #     run: dotnet test ./apis/poi/ --no-restore --verbosity normal
+  #   - name: Issue
+  #     if: ${{ failure() }}
+  #     uses: JasonEtco/create-an-issue@v2
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   docker-build-push:  
     runs-on: ubuntu-latest
     needs: build
@@ -58,6 +59,7 @@ jobs:
       uses: azure/webapps-deploy@v2
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_POI_STAGING  }}
+        slot-name: ${{ env.AZURE_WEBAPP_SLOT }}
         images: openhackuc9203t8acr.azurecr.io/devopsoh/api-poi:${{github.run_number}}
             

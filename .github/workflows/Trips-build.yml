@@ -14,30 +14,32 @@ on:
       - 'apis/trips/**'
 env:
   AZURE_WEBAPP_NAME: openhackuc9203t8trips
+  AZURE_WEBAPP_SLOT: staging
+
 jobs:
-  build:
+  # build:
 
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./apis/trips
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./apis/trips
 
-    steps:
-    - uses: actions/checkout@v2
+  #   steps:
+  #   - uses: actions/checkout@v2
 
-    - name: Setup Go
-      uses: actions/setup-go@v2
+  #   - name: Setup Go
+  #     uses: actions/setup-go@v2
 
-    - name: Get dependencies
-      run: |
-        go get
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
+  #   - name: Get dependencies
+  #     run: |
+  #       go get
+  #       if [ -f Gopkg.toml ]; then
+  #           curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+  #           dep ensure
+  #       fi
 
-    - name: Build
-      run: go build -v .
+  #   - name: Build
+  #     run: go build -v .
 
   docker-build-push:  
     runs-on: ubuntu-latest
@@ -64,5 +66,6 @@ jobs:
       uses: azure/webapps-deploy@v2
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TRIPS  }} # Define secret variable in repository settings as per action documentation
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TRIPS_STAGING  }} # Define secret variable in repository settings as per action documentation
+        slot-name: ${{ env.AZURE_WEBAPP_SLOT }}
         images: openhackuc9203t8acr.azurecr.io/devopsoh/api-trips:${{github.run_number}}
