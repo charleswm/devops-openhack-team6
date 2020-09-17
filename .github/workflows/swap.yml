@@ -18,4 +18,4 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: swaparoo
-      run: az webapp deployment slot swap  -g ${{AZURE_RG}} -n ${{AZURE_WEBAPP_NAME}} --slot staging --target-slot production
+      run: az webapp deployment slot swap  -g ${{ env.AZURE_RG }} -n ${{ env.AZURE_WEBAPP_NAME }} --slot staging --target-slot production
