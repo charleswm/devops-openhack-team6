@@ -10,7 +10,7 @@ namespace UnitTests
         public void HealthCheckTestModel()
         {
             Assert.Equal("POI Service Healthcheck", new Healthcheck().Message);
-            Assert.Equal("Healthy. That's a spicy meatball!", new Healthcheck().Status);
+            Assert.Equal("Healthy. Thats a spicy meatball!", new Healthcheck().Status);
 
         }
     }
