@@ -17,6 +17,7 @@ on:
     paths:
       - 'apis/userprofile/**'
 env:
+  AZURE_RG: openhackuc9203t8rg
   AZURE_WEBAPP_NAME: openhackuc9203t8userprofile
   AZURE_WEBAPP_SLOT: staging
   AZURE_WEBAPP_URL: https://openhackuc9203t8userprofile.azurewebsites.net/
@@ -82,6 +83,7 @@ jobs:
   #     run: ./healthcheck.sh -i ${{ env.HEALTH_CHECK_URL }}
   swap:
     runs-on: ubuntu-latest
+    needs: docker-build-push
     steps: 
       - uses: azure/login@v1.1
         with:
