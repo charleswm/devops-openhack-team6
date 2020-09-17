@@ -97,7 +97,7 @@ jobs:
         }
         else {
         Write-Error "POI API is not healthy"
-        }staging --target-slot pr
+        }
   revert-prod:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -124,4 +124,4 @@ jobs:
         else {
         Write-Error "POI API is not healthy"
         az webapp deployment slot swap --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RG }} --slot staging --target-slot production
-        }staging --target-slot pr
+        }
