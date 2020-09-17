@@ -104,7 +104,7 @@ jobs:
     needs: validate-and-swap-prod
     steps:
     - name: curl
-      id: poi-health-check
+      id: health-check
       uses: satak/webrequest-action@master
       with:
         url: ${{env.AZURE_WEBAPP_URL}}api/healthcheck/user
@@ -116,7 +116,7 @@ jobs:
     - name: Check Output Swap Slots
       shell: pwsh
       run: |
-        $output = '${{ steps.poi-health-check.outputs.output }}' | ConvertFrom-Json
+        $output = '${{ steps.health-check.outputs.output }}' | ConvertFrom-Json
         Write-Host " Status code is $($output.statusCode) "
         if($($output.statusCode) -eq 200) {
         Write-host "Healthy"
