@@ -16,6 +16,9 @@ on:
 env:
   AZURE_WEBAPP_NAME: openhackuc9203t8userprofile
   AZURE_WEBAPP_SLOT: staging
+  AZURE_WEBAPP_URL: https://openhackuc9203t8userprofile.azurewebsites.net/
+  AZURE_WEBAPP_STAGING_URL: https://openhackuc9203t8userprofile-staging.azurewebsites.net/
+  HEALTH_CHECK_URL: ${{AZURE_WEBAPP_STAGING_URL}}api/healthcheck/userprofile
 
 jobs:
 #   build:
@@ -67,3 +70,10 @@ jobs:
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_USERPROFILE_STAGING  }} # Define secret variable in repository settings as per action documentation
         slot-name: ${{ env.AZURE_WEBAPP_SLOT }}
         images: openhackuc9203t8acr.azurecr.io/devopsoh/api-userprofile:${{github.run_number}}
+  
+  run-staging-healthcheck:
+    runs-on: ubuntu-latest
+    needs: docker-build-push
+    steps:
+    - name: poll-app-health
+      run: ./healthcheck.sh -i ${{ HEALTH_CHECK_URL }}
