@@ -16,8 +16,8 @@ env:
   AZURE_RG: openhackuc9203t8rg
   AZURE_WEBAPP_NAME: openhackuc9203t8poi
   AZURE_WEBAPP_SLOT: staging
-  AZURE_WEBAPP_URL:
-  AZURE_WEBAPP_STAGING_URL:
+  AZURE_WEBAPP_URL: https://openhackuc9203t8poi.azurewebsites.net
+  AZURE_WEBAPP_STAGING_URL: https://openhackuc9203t8poi-staging.azurewebsites.net
   
 jobs:
   # build:
