@@ -19,3 +19,4 @@ jobs:
     steps:
     - name: poll-app-health
       run: ./scripts/healthcheck.sh -i ${{ env.HEALTH_CHECK_URL }}
+      uses: actions/github-script@v3
