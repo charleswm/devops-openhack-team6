@@ -10,7 +10,7 @@ env:
   AZURE_WEBAPP_SLOT: staging
   AZURE_WEBAPP_URL: https://openhackuc9203t8userprofile.azurewebsites.net/
   AZURE_WEBAPP_STAGING_URL: https://openhackuc9203t8userprofile-staging.azurewebsites.net/
-  HEALTH_CHECK_URL: https://openhackuc9203t8userprofile-staging.azurewebsites.net/api/healthcheck/userprofile
+  HEALTH_CHECK_URL: https://openhackuc9203t8userprofile-staging.azurewebsites.net/api/healthcheck/user
 
 jobs:
   run-staging-healthcheck:
