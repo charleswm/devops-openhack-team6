@@ -4,6 +4,10 @@ on:
       - master
   workflow_dispatch:
 
+env:
+  AZURE_WEBAPP_NAME: openhackuc9203t8userprofile
+  AZURE_RG: openhackuc9203t8rg
+
 name: AzureLoginSample
 jobs:
 
@@ -13,3 +17,5 @@ jobs:
     - uses: azure/login@v1.1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: swaparoo
+      run: az webapp deployment slot swap  -g ${{AZURE_RG}} -n ${{AZURE_WEBAPP_NAME}} --slot staging --target-slot production
