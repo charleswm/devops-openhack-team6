@@ -76,7 +76,7 @@ jobs:
       id: stage-health-check
       uses: satak/webrequest-action@master
       with:
-        url: ${{env.AZURE_WEBAPP_STAGING_URL}}api/healthcheck/user-java
+        url: ${{env.AZURE_WEBAPP_STAGING_URL}}/api/healthcheck/user-java
         method: GET
     - name: Login via Az module
       uses: azure/login@v1.1
@@ -103,7 +103,7 @@ jobs:
       id: prod-health-check
       uses: satak/webrequest-action@master
       with:
-        url: ${{env.AZURE_WEBAPP_URL}}api/healthcheck/user-java
+        url: ${{env.AZURE_WEBAPP_URL}}/api/healthcheck/user-java
         method: GET
     - name: Login via Az module
       uses: azure/login@v1.1
