@@ -82,7 +82,7 @@ jobs:
     needs: build-and-deploy-staging
     steps:
     - name: curl
-      id: poi-health-check
+      id: trips-health-check
       uses: satak/webrequest-action@master
       with:
         url: ${{env.AZURE_WEBAPP_STAGING_URL}}api/healthcheck/user
@@ -94,14 +94,14 @@ jobs:
     - name: Check Output Swap Slots
       shell: pwsh
       run: |
-        $output = '${{ steps.poi-health-check.outputs.output }}' | ConvertFrom-Json
+        $output = '${{ steps.trips-health-check.outputs.output }}' | ConvertFrom-Json
         Write-Host " Status code is $($output.statusCode) "
         if($($output.statusCode) -eq 200) {
         Write-host "Healthy"
         az webapp deployment slot swap --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RG }} --slot staging --target-slot production
         }
         else {
-        Write-Error "POI API is not healthy"
+        Write-Error "TRIPS API is not healthy"
         }
   revert-prod:
     if: github.ref == 'refs/heads/master'
@@ -109,7 +109,7 @@ jobs:
     needs: validate-and-swap-prod
     steps:
     - name: curl
-      id: poi-health-check
+      id: trips-health-check
       uses: satak/webrequest-action@master
       with:
         url: ${{env.AZURE_WEBAPP_URL}}api/healthcheck/user
@@ -121,7 +121,7 @@ jobs:
     - name: Check Output Swap Slots
       shell: pwsh
       run: |
-        $output = '${{ steps.poi-health-check.outputs.output }}' | ConvertFrom-Json
+        $output = '${{ steps.trips-health-check.outputs.output }}' | ConvertFrom-Json
         Write-Host " Status code is $($output.statusCode) "
         if($($output.statusCode) -eq 200) {
         Write-host "Healthy"
