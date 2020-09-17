@@ -122,6 +122,6 @@ jobs:
         Write-host "Healthy"
         }
         else {
-        Write-Error "POI API is not healthy"
+        Write-Host "POI API is not healthy"
         az webapp deployment slot swap --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_RG }} --slot staging --target-slot production
         }
