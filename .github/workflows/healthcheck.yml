@@ -23,7 +23,7 @@ jobs:
       id: poi-health-check
       uses: satak/webrequest-action@master
       with:
-        url: ${{env.AZURE_WEBAPP_STAGING_URL}}/api/healthcheck/poi
+        url: ${{env.AZURE_WEBAPP_STAGING_URL}}/api/healthcheck/user
         method: GET
     - name: Login via Az module
       uses: azure/login@v1.1
